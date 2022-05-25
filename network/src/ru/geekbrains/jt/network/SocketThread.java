@@ -1,5 +1,6 @@
 package ru.geekbrains.jt.network;
 
+import javax.swing.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -50,6 +51,9 @@ public class SocketThread extends Thread {
             return false;
         }
     }
+//    public synchronized void changePassword(JPasswordField password) {
+//
+//    }
 
     public synchronized void close() {
         interrupt();
