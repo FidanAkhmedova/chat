@@ -153,6 +153,7 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
         String login = arr[1];
         String password = arr[2];
         String nickname = SqlClient.getNick(login, password);
+        //SqlClient.changePassword(password1);
         if (nickname == null) {
             putLog("Invalid login attempt " + login);
             client.authFail();

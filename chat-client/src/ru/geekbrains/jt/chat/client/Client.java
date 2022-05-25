@@ -4,6 +4,7 @@ import ru.geekbrains.jt.chat.common.Messages;
 import ru.geekbrains.jt.network.SocketThread;
 import ru.geekbrains.jt.network.SocketThreadListener;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -116,12 +117,7 @@ public class Client extends JFrame implements ActionListener, Thread.UncaughtExc
         tfMessage.setText(null);
         tfMessage.grabFocus();
         socketThread.sendMessage(Messages.getTypeBcastFromClient(msg));
-//        tfMessage.requestFocusInWindow();
-//        putLog(String.format("%s: %s", username, msg));
-        //wrtMsgToLogFile(msg, username);
-
     }
-//codewars, hackerrank, leetcode, codegame
 
     private void wrtMsgToLogFile(String msg, String username) {
         try (FileWriter out = new FileWriter("log.txt", true)) {
