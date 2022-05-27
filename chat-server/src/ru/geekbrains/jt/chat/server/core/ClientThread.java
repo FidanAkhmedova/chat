@@ -22,6 +22,7 @@ public class ClientThread extends SocketThread {
     public String getNickname() {
         return nickname;
     }
+    public void changePassword(){}
 
     public boolean isAuthorized() {
         return isAuthorized;

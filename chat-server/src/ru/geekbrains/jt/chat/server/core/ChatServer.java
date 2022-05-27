@@ -135,7 +135,6 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
                 client.msgFormatError(msg);
         }
     }
-
     private void sendToAllAuthorized(String msg) {
         for (int i = 0; i < clients.size(); i++) {
             ClientThread client = (ClientThread) clients.get(i);
@@ -143,7 +142,6 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
             client.sendMessage(msg);
         }
     }
-
     private void handleNonAuthMsg(ClientThread client, String msg) {
         String[] arr = msg.split(Messages.DELIMITER);
         if (arr.length != 3 || !arr[0].equals(Messages.AUTH_REQUEST)) {
@@ -153,6 +151,7 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
         String login = arr[1];
         String password = arr[2];
         String nickname = SqlClient.getNick(login, password);
+        //SqlClient.changePassword(password1);
         if (nickname == null) {
             putLog("Invalid login attempt " + login);
             client.authFail();
