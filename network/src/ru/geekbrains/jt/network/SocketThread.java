@@ -51,6 +51,7 @@ public class SocketThread extends Thread {
             return false;
         }
     }
+
 //    public synchronized void changePassword(JPasswordField password) {
 //
 //    }

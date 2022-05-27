@@ -4,19 +4,27 @@ import ru.geekbrains.jt.chat.common.Messages;
 import ru.geekbrains.jt.network.SocketThread;
 import ru.geekbrains.jt.network.SocketThreadListener;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Client extends JFrame implements ActionListener, Thread.UncaughtExceptionHandler, SocketThreadListener {
+    File file = new File("C:\\Users\\Marty\\IdeaProjects\\chat\\file.txt");
+    RandomAccessFile randomAccessFile;
+    {
+        try {
+            randomAccessFile = new RandomAccessFile("history_login1.txt", "rw");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private static final int WIDTH = 600;
     private static final int HEIGHT = 300;
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss: ");
@@ -30,7 +38,6 @@ public class Client extends JFrame implements ActionListener, Thread.UncaughtExc
     private final JTextField tfLogin = new JTextField("ivan-igorevich");
     private final JPasswordField tfPassword = new JPasswordField("123");
     private final JButton btnLogin = new JButton("Login");
-
     private final JPanel panelBottom = new JPanel(new BorderLayout());
     private final JButton btnDisconnect = new JButton("Disconnect");
     private final JTextField tfMessage = new JTextField();
@@ -117,27 +124,64 @@ public class Client extends JFrame implements ActionListener, Thread.UncaughtExc
         tfMessage.setText(null);
         tfMessage.grabFocus();
         socketThread.sendMessage(Messages.getTypeBcastFromClient(msg));
+        wrtMsgToLogFile(msg, username);
     }
 
     private void wrtMsgToLogFile(String msg, String username) {
-        try (FileWriter out = new FileWriter("log.txt", true)) {
-            out.write(username + ": " + msg + "\n");
-            out.flush();
-        } catch (IOException e) {
-            if (!shownIoErrors) {
-                shownIoErrors = true;
-                showException(Thread.currentThread(), e);
+        try(FileWriter writer = new FileWriter("history_login1.txt", true))
+        {
+            if (!msg.equals("")){
+                writer.write(msg+" \n");
+                writer.flush();
             }
+        }
+        catch(IOException ex){
+            System.out.println(ex.getMessage());
         }
     }
 
+    private void getHistory(){
+        if (file.length() <= 0)return;
+            StringBuilder builder = new StringBuilder();
+            try {
+                long fileLength = file.length();
+                randomAccessFile.seek(fileLength);
+                int  i = 0;
+                for(long pointer = fileLength; pointer > 0; pointer--){
+                    if (i == 100) break;
+                    randomAccessFile.seek(pointer);
+                    char c;
+                    c = (char)randomAccessFile.read();
+                    if(c == ' ') i++;
+                    builder.append(c);
+                }
+                builder.reverse();
+                log.append(String.valueOf(builder));
+            }
+            catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            finally{
+                if(randomAccessFile != null){
+                    try {
+                        randomAccessFile.close();
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+    }
     private void putLog(String msg) {
         if ("".equals(msg)) return;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 log.append(msg + "\n");
-                log.setCaretPosition(log.getDocument().getLength());
+                log.setCaretPosition(log.getDocument().getLength());getHistory();
             }
         });
     }
@@ -158,7 +202,6 @@ public class Client extends JFrame implements ActionListener, Thread.UncaughtExc
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         e.printStackTrace();
-        //showException(t, e);
     }
 
     @Override
@@ -181,6 +224,7 @@ public class Client extends JFrame implements ActionListener, Thread.UncaughtExc
         String login = tfLogin.getText();
         String pass = new String(tfPassword.getPassword());
         t.sendMessage(Messages.getAuthRequest(login, pass));
+
     }
 
     @Override
