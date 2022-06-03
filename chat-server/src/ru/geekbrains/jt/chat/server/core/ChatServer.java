@@ -11,6 +11,8 @@ import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ChatServer implements ServerSocketThreadListener, SocketThreadListener {
     private final int SERVER_SOCKET_TIMEOUT = 2000;
@@ -20,6 +22,7 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
     int counter = 0;
     ServerSocketThread server;
     ChatServerListener listener;
+
 
     public ChatServer(ChatServerListener listener) {
         this.listener = listener;
@@ -135,7 +138,6 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
                 client.msgFormatError(msg);
         }
     }
-
     private void sendToAllAuthorized(String msg) {
         for (int i = 0; i < clients.size(); i++) {
             ClientThread client = (ClientThread) clients.get(i);
@@ -143,7 +145,6 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
             client.sendMessage(msg);
         }
     }
-
     private void handleNonAuthMsg(ClientThread client, String msg) {
         String[] arr = msg.split(Messages.DELIMITER);
         if (arr.length != 3 || !arr[0].equals(Messages.AUTH_REQUEST)) {
@@ -153,6 +154,7 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
         String login = arr[1];
         String password = arr[2];
         String nickname = SqlClient.getNick(login, password);
+        //SqlClient.changePassword(password1);
         if (nickname == null) {
             putLog("Invalid login attempt " + login);
             client.authFail();
