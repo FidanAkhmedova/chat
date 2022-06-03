@@ -1,5 +1,4 @@
 package ru.geekbrains.jt.chat.client;
-
 import ru.geekbrains.jt.chat.common.Messages;
 import ru.geekbrains.jt.network.SocketThread;
 import ru.geekbrains.jt.network.SocketThreadListener;
