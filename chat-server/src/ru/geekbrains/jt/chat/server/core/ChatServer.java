@@ -23,6 +23,7 @@ public class ChatServer implements ServerSocketThreadListener, SocketThreadListe
     ServerSocketThread server;
     ChatServerListener listener;
 
+
     public ChatServer(ChatServerListener listener) {
         this.listener = listener;
     }
